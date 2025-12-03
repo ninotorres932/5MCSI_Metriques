@@ -1,41 +1,39 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Commits</title>
+<head>
+    <meta charset="UTF-8">
+    <title>Commits GitHub</title>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-  </head>
-  <body>
-    <div id="chart_div"></div>
-    <script>
-      google.charts.load('current', { packages: ['corechart'] });
-      google.charts.setOnLoadCallback(drawBackgroundColor);
-     function drawBackgroundColor() {
-    function drawChart(data) {
-    // Convertir les données récupérées en un tableau utilisable par Google Charts
-    var dataTable = new google.visualization.DataTable();
-    dataTable.addColumn('string', 'Date');
-    dataTable.addColumn('number', 'Valeur');
-    data.results.forEach(entry => {
-      var date = new Date(entry.Jour * 1000);
-      dataTable.addRow([date.toLocaleDateString(), entry.temp]);
-    });
-    // Configurer les options du graphique en ligne
-    var options = {
-          title: 'Mes commits',
-          curveType: 'function',
-          legend: { position: 'bottom' },
-        };
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
 
-        var chart = new google.visualization.Histogram(document.getElementById('chart_div'));
-        chart.draw(dataTable, options);
-      }
-  // Récupération de données depuis notre API github
-  fetch('/extract-minutes/')
-    .then(response => response.json())
-    .then(data => {
-      drawChart(data);
-    })
-}
+        function drawChart() {
+            fetch('/commits-data/')
+            .then(response => response.json())
+            .then(data => {
+                var chartData = [['Minute', 'Commits']];
+                data.results.forEach(item => {
+                    chartData.push([item.minute.toString(), item.commits]);
+                });
+
+                var dataTable = google.visualization.arrayToDataTable(chartData);
+
+                var options = {
+                    title: 'Répartition des commits par minute',
+                    hAxis: {title: 'Minute'},
+                    vAxis: {title: 'Nombre de commits'},
+                    legend: 'none'
+                };
+
+                var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+                chart.draw(dataTable, options);
+            });
+        }
     </script>
-  </body>
+</head>
+<body>
+    <h2>Commits par minute</h2>
+    <div id="chart_div" style="width: 900px; height: 500px;"></div>
+</body>
 </html>
