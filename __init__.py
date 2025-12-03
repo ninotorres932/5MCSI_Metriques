@@ -16,4 +16,4 @@ if __name__ == "__main__":
 
 @app.route("/contact/")
 def MaPremiereAPI():
-    return "<h2>https://nino932.alwaysdata.net/contact</h2>"
+    return "<h2>Ma page de contact</h2>"
